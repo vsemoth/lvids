@@ -1,0 +1,31 @@
+@charset='utf-8';
+
+ .btn, .form-control {
+ 	margin-bottom: 30px;
+ }
+
+ #navbarSupportedContent, .navbar-nav, .collapse, .navbar-collapse, .dropdown, .dropdown-menu { 
+ 	margin: 0;
+ 	padding: 0;
+ 	float: right;
+ }
+
+ .glyphicon, .glyphicon-pencil {
+ 	display: inline-block;
+ 	float: right;
+ 	width: 50px;
+ 	max-height: 30px;
+ 	vertical-align: middle;
+ 	text-align: center;
+ 	border: 0px;
+ }
+
+ nav {
+ 	margin-bottom: 50px;
+ 	clear: both;
+ }
+
+ .link:hover {
+ 	text-decoration: none;
+ 	color: #cc22cc;
+ }

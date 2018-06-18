@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use Embed\Embed;
+use Embed\Http\DispatcherInteface;
+use Embed\Http\Url;
+use Embed\Http\Response;
+use Embed\Http\ImageResponse;
+use Image;
 
 class postsController extends Controller
 {
@@ -39,17 +45,52 @@ class postsController extends Controller
     public function store(Request $request)
     {
         //
-        @csrf;
+            @csrf;
 
-        $post = new Post;
+            $post = new Post;
 
-        $post->title = $request->input('title');
+            $body = $request->input('body');
 
-        $post->body = $request->input('body');
+        if (filter_var($body, FILTER_VALIDATE_URL) === FALSE) {
 
-        $post->save();
+            $post->title = $request->input('title');
 
-        return redirect()->route('posts.index');
+        If($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = 'images/' . time() . '.' . $image->getClientOriginalExtension();
+            $location = public_path($filename);
+            Image::make($image)->resize(800,400)->save($location);
+
+            $post->image = $filename;
+        };
+
+            $post->body = $request->input('body');
+
+        } else {
+            
+            $info = Embed::create($body, [
+                'min_image_width' => 100,
+                'min_image_height' => 100
+            ]);
+
+            //Get all providers
+            $providers = $info->getProviders();
+            //Get the oembed provider
+            $oembed = $providers['oembed'];
+
+            $post->title = $oembed->getTitle();
+
+            $post->image = $info->image;
+
+            $post->body = $info->code;
+        }
+
+            //dd($post);
+
+            $post->save();
+
+            return redirect()->route('posts.index');
+
     }
 
     /**
@@ -60,7 +101,11 @@ class postsController extends Controller
      */
     public function show($id)
     {
-        //
+        // Find selected post in database
+        $post = Post::find($id);
+
+        // Return show view with data
+        return view('posts.show')->withPost($post);
     }
 
     /**
